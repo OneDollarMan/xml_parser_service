@@ -21,14 +21,25 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # 3. Линтинг и проверка Docker Compose файла
+      # 3. Создание файла .env
+      - name: Create .env file
+        run: |
+          echo "POSTGRES_DB=analyzer" >> .env
+          echo "POSTGRES_USER=postgres" >> .env
+          echo "POSTGRES_PASSWORD=postgres" >> .env
+          echo "POSTGRES_HOST=postgresql" >> .env
+          echo "POSTGRES_PORT=5432" >> .env
+          echo "RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/" >> .env
+          echo "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" >> .env
+
+      # 4. Линтинг и проверка Docker Compose файла
       - name: Lint Docker Compose
         run: docker compose config
 
-      # 4. Сборка контейнеров
+      # 5. Сборка контейнеров
       - name: Build Docker images
         run: docker compose build
 
-      # 5. Запуск тестов
+      # 6. Запуск тестов
       - name: Run tests
         run: docker compose run --rm fastapi pytest /tests
