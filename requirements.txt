@@ -1,0 +1,10 @@
+fastapi
+asyncpg
+sqlalchemy
+pydantic
+pytest
+pytest-asyncio
+uvicorn
+aiohttp
+celery
+anthropic

@@ -1,0 +1,45 @@
+services:
+  fastapi:
+    build: .
+    command: uvicorn main:app --host 0.0.0.0
+    volumes:
+      - ./src:/src
+      - ./logs:/logs
+      - ./tests:/tests
+    container_name: fastapi
+    env_file: ".env"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresql
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:latest
+    hostname: rabbitmq
+    expose:
+      - "15672"
+      - "5672"
+
+  celery:
+    container_name: celery-worker
+    build: .
+    command: celery -A tasks worker -l INFO
+    env_file: ".env"
+    volumes:
+      - ./src:/src
+      - ./logs:/logs
+    depends_on:
+      - rabbitmq
+
+  postgresql:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file: ".env"
+    container_name: postgres
+    volumes:
+      - postgresql_volume:/var/lib/postgresql/data/
+
+volumes:
+  postgresql_volume:

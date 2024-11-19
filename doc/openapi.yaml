@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /upload_report_url/:
+    post:
+      summary: Post Upload Report By Url
+      operationId: post_upload_report_by_url_upload_report_url__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadReportSchema'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeRequestSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AnalyzeRequestSchema:
+      properties:
+        id:
+          type: integer
+          title: Id
+        status:
+          type: string
+          title: Status
+        report_url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Report Url
+        report_date:
+          anyOf:
+            - type: string
+              format: date
+            - type: 'null'
+          title: Report Date
+        llm_result:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Llm Result
+      type: object
+      required:
+        - id
+        - status
+        - report_url
+        - report_date
+        - llm_result
+      title: AnalyzeRequestSchema
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    UploadReportSchema:
+      properties:
+        url:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Url
+      type: object
+      required:
+        - url
+      title: UploadReportSchema
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
